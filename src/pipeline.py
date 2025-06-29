@@ -14,4 +14,10 @@ def run_pipeline(audio_path, config):
         transcripts.append(text)
     full_transcript = '\n'.join(transcripts)
     summary = summarize_text(full_transcript, config)
+    # Delete audio chunks after processing
+    for chunk in chunk_paths:
+        try:
+            os.remove(chunk)
+        except Exception as e:
+            print(f"Warning: Could not delete chunk {chunk}: {e}")
     return full_transcript, summary
