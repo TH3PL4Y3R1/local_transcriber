@@ -1,0 +1,9 @@
+# Project configuration for local transcriber & summarizer
+chunk_size: 300
+whisper_model: base
+llm_model: llama-2-7b.gguf
+input_dir: audio_input
+chunks_dir: audio_chunks
+transcripts_dir: transcripts
+summaries_dir: summaries
+models_dir: models
