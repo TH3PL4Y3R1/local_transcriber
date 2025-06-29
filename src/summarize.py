@@ -1,24 +1,22 @@
 def summarize_text(text, config):
-    # Try to use transformers first, fallback to llama-cpp-python if specified in config
-    llm_model = config.get('llm_model', 'llama-2-7b.gguf')
+    # Use llama-cpp-python with Mistral 7B Instruct v0.3 GGUF model by default
+    import os
+    llm_model = config.get('llm_model', 'mistral-7b-instruct-v0.3.Q4_K_M.gguf')
     if llm_model.endswith('.gguf'):
-        # Use llama-cpp-python
         try:
             from llama_cpp import Llama
             model_path = config.get('models_dir', 'models')
             model_file = os.path.join(model_path, llm_model)
-            llm = Llama(model_path=model_file, n_ctx=2048)
-            prompt = f"Summarize the following text in Spanish:\n{text[:2000]}"
-            output = llm(prompt, max_tokens=256, stop=["\n"])
+            llm = Llama(model_path=model_file, n_ctx=4096)
+            prompt = f"Resumí el siguiente texto en español de forma concisa y clara, usando viñetas si es posible.\n\nTexto:\n{text[:3500]}\n\nResumen:"
+            output = llm(prompt, max_tokens=256, stop=["\n\n"])
             return output['choices'][0]['text'].strip()
         except Exception as e:
             return f"[LLAMA ERROR] {e}\n{text[:200]}..."
     else:
-        # Use transformers pipeline
         try:
             from transformers import pipeline
             summarizer = pipeline("summarization", model=llm_model)
-            # transformers models have a max token limit, so chunk if needed
             max_chunk = 1000
             chunks = [text[i:i+max_chunk] for i in range(0, len(text), max_chunk)]
             summary = ""

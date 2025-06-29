@@ -1,7 +1,9 @@
 # Project configuration for local transcriber & summarizer
-chunk_size: 300
-whisper_model: base
-llm_model: llama-2-7b.gguf
+chunk_size: 120  # seconds, 2 minutes per chunk for better context
+whisper_model: medium  # use 'medium' for good balance of speed and accuracy; try 'large' if you want best accuracy and have enough VRAM
+llm_model: mistral-7b-instruct-v0.3.Q4_K_M.gguf
+# Set default language for transcription
+whisper_language: es
 input_dir: audio_input
 chunks_dir: audio_chunks
 transcripts_dir: transcripts
