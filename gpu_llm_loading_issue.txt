@@ -117,3 +117,32 @@ This guide will help you ensure llama-cpp-python uses your GPU (CUDA/cuBLAS) for
 ---
 
 If you follow these steps and still see CPU-only usage, copy any error messages and logs and seek help on the llama-cpp-python GitHub
+
+---
+
+## Jupyter Notebook Workflow for GPU LLM Debugging and Summarization
+
+A Jupyter notebook is available in the `debugging` folder to help you debug GPU loading issues and summarize .txt files using a GGUF model. The notebook is named `gpu_llm_debugging.ipynb` and follows this workflow:
+
+1. **Setup Debugging Folder Structure**
+   - Creates `debugging/input`, `debugging/output`, and `debugging/src` subfolders for organization.
+2. **Import Required Libraries**
+   - Imports `os`, `pathlib`, `llama_cpp`, and other necessary libraries.
+3. **Summarize Function Implementation**
+   - Implements a `summarize_text` function in `src/summarize.py` that loads a GGUF model using llama-cpp-python and summarizes input text.
+4. **Load and Display Input Text File**
+   - Loads a `.txt` file from the `debugging/input` folder and displays its contents.
+5. **Run Summarization with GGUF Model**
+   - Calls the summarize function on the loaded text, specifying the model path and `n_gpu_layers` as needed. Displays the summary.
+6. **Save Summary to Output Folder**
+   - Saves the generated summary to a new `.txt` file in the `debugging/output` folder.
+7. **Troubleshooting and Checklist**
+   - Includes a section with troubleshooting tips and a checklist for GPU debugging.
+
+**To use the notebook:**
+- Place your GGUF model in the appropriate models directory.
+- Add your input `.txt` files to `debugging/input`.
+- Open and run the notebook `debugging/gpu_llm_debugging.ipynb` step by step.
+- The summary will be saved in `debugging/output`.
+
+This notebook provides an interactive and organized way to test and debug GPU LLM summarization workflows while keeping your original step-by-step instructions above for manual debugging and setup.
