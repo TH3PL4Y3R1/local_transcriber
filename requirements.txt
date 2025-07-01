@@ -1,7 +1,5 @@
 openai-whisper
 pydub
-ffmpeg-python
 transformers
-bitsandbytes
 llama-cpp-python
 torch
