@@ -1,0 +1,148 @@
+# Debugging llama-cpp-python GGUF GPU Usage
+
+This guide will help you ensure llama-cpp-python uses your GPU (CUDA/cuBLAS) for GGUF models.
+
+---
+
+## 1. Prerequisites
+
+### a. Hardware
+- NVIDIA GPU (6GB+ VRAM recommended for 7B models)
+- Check with: `nvidia-smi` (run in terminal)
+
+### b. Software
+- Windows 10/11 (64-bit)
+- Python 3.8–3.12 (64-bit)
+- CUDA Toolkit (matching your GPU driver)
+
+---
+
+## 2. Install CUDA Toolkit
+
+1. Download the correct CUDA Toolkit for your GPU and driver from:
+   https://developer.nvidia.com/cuda-toolkit-archive
+
+2. Install it and **add CUDA's `bin` directory to your PATH**.
+
+3. Verify installation:
+   - Open terminal and run: `nvcc --version`
+   - You should see your CUDA version.
+
+---
+
+## 3. Install llama-cpp-python with CUDA/cuBLAS Support
+
+1. **Uninstall any previous version:**
+   ```
+   pip uninstall llama-cpp-python -y
+   ```
+
+2. **Install the CUDA-enabled wheel:**
+   - Find your CUDA version (e.g., 12.1 → `cu121`, 11.8 → `cu118`)
+   - Run:
+     ```
+     pip install llama-cpp-python --upgrade --force-reinstall --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu121
+     ```
+     *(Replace `cu121` with your CUDA version if needed)*
+
+3. **Verify installation:**
+   - In Python, run:
+     ```python
+     import llama_cpp
+     print(llama_cpp.__file__)
+     print(llama_cpp.__version__)
+     ```
+   - The path should mention `cu` (not just `cpu`).
+
+---
+
+## 4. Check Your Code
+
+- In your code, set `n_gpu_layers` to a value that fits your VRAM (e.g., 40–50 for 8GB with a 7B model).
+- Example:
+  ```python
+  llm = Llama(model_path=model_file, n_ctx=4096, n_gpu_layers=48)
+  ```
+
+---
+
+## 5. Run and Observe Logs
+
+- When you run your script, look for lines like:
+  ```
+  llama.cpp: loading model on GPU: 48 layers
+  ```
+- If you see only CPU messages, the GPU build is not being used.
+
+---
+
+## 6. Troubleshooting
+
+- **If you see only CPU usage:**
+  - Double-check your CUDA version and llama-cpp-python wheel.
+  - Ensure your Python is 64-bit.
+  - Check that your GPU is not out of memory (lower `n_gpu_layers` if needed).
+  - Try running a minimal script:
+    ```python
+    from llama_cpp import Llama
+    llm = Llama(model_path="path/to/model.gguf", n_gpu_layers=10)
+    print("Loaded!")
+    ```
+  - Watch for errors or warnings in the terminal.
+
+- **If you get DLL errors:**
+  - Ensure CUDA's `bin` directory is in your PATH.
+  - Reboot after installing CUDA Toolkit.
+
+- **For more help:**
+  - See: https://github.com/abetlen/llama-cpp-python/discussions/1587
+
+---
+
+## 7. Optional: Use LM Studio
+
+- LM Studio handles GPU/CPU automatically.
+- You can use its local API instead of llama-cpp-python if you prefer.
+
+---
+
+## 8. Summary Checklist
+
+- [ ] NVIDIA GPU detected (`nvidia-smi`)
+- [ ] CUDA Toolkit installed and in PATH
+- [ ] Correct llama-cpp-python CUDA wheel installed
+- [ ] `n_gpu_layers` set in code
+- [ ] Logs show "loading model on GPU"
+
+---
+
+If you follow these steps and still see CPU-only usage, copy any error messages and logs and seek help on the llama-cpp-python GitHub
+
+---
+
+## Jupyter Notebook Workflow for GPU LLM Debugging and Summarization
+
+A Jupyter notebook is available in the `debugging` folder to help you debug GPU loading issues and summarize .txt files using a GGUF model. The notebook is named `gpu_llm_debugging.ipynb` and follows this workflow:
+
+1. **Setup Debugging Folder Structure**
+   - Creates `debugging/input`, `debugging/output`, and `debugging/src` subfolders for organization.
+2. **Import Required Libraries**
+   - Imports `os`, `pathlib`, `llama_cpp`, and other necessary libraries.
+3. **Summarize Function Implementation**
+   - Implements a `summarize_text` function in `src/summarize.py` that loads a GGUF model using llama-cpp-python and summarizes input text.
+4. **Load and Display Input Text File**
+   - Loads a `.txt` file from the `debugging/input` folder and displays its contents.
+5. **Run Summarization with GGUF Model**
+   - Calls the summarize function on the loaded text, specifying the model path and `n_gpu_layers` as needed. Displays the summary.
+6. **Save Summary to Output Folder**
+   - Saves the generated summary to a new `.txt` file in the `debugging/output` folder.
+7. **Troubleshooting and Checklist**
+   - Includes a section with troubleshooting tips and a checklist for GPU debugging.
+
+**To use the notebook:**
+- Place your GGUF model in the appropriate models directory.
+- Add your input `.txt` files to `debugging/input`.
+- Open and run the notebook `debugging/gpu_llm_debugging.ipynb` step by step.
+- The summary will be saved in `debugging/output`.
+
+This notebook provides an interactive and organized way to test and debug GPU LLM summarization workflows while keeping your original step-by-step instructions above for manual debugging and setup.
